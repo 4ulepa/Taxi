@@ -47,3 +47,17 @@ class Auto(models.Model):
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = 'Автомобили'
+
+
+class VehiclePassport(models.Model):
+    auto = models.OneToOneField(Auto, on_delete=models.CASCADE, name='Автомобиль')
+    vin = models.CharField(max_length=30, name='Идентификационный номер (VIN)')
+    engine_volume = models.SmallIntegerField(name='Объем двигателя, куб.см')
+    engine_power = models.SmallIntegerField(name='Мощность двигателя, л.с.')
+
+    def __str__(self):
+        return f'{self.auto}::{self.vin}'
+
+    class Meta:
+        verbose_name = 'Паспорт машины'
+        verbose_name_plural = 'Паспорта машин'

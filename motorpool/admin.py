@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Brand, Auto, Option
+from .models import Brand, Auto, Option, VehiclePassport
 
 
 @admin.register(Brand)
@@ -15,4 +15,9 @@ class AutoAdmin(admin.ModelAdmin):
 
 @admin.register(Option)
 class OptionAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(VehiclePassport)
+class VehiclePassportAdmin(admin.ModelAdmin):
     pass
