@@ -27,6 +27,7 @@ class Auto(models.Model):
     description = models.TextField(max_length=500, default='', blank=True)
     year = models.PositiveSmallIntegerField(null=True)
     auto_class = models.CharField(max_length=1, choices=AUTO_CLASS_CHOICES, default=AUTO_CLASS_ECONOMY)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
         return self.number
