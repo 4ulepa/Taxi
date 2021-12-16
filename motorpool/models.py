@@ -38,8 +38,8 @@ class Auto(models.Model):
     description = models.TextField(max_length=500, default='', blank=True, verbose_name='Описание')
     year = models.PositiveSmallIntegerField(null=True, verbose_name='Год выпуска автомобиля')
     auto_class = models.CharField(max_length=1, choices=AUTO_CLASS_CHOICES, default=AUTO_CLASS_ECONOMY, verbose_name='Класс автомобиля')
-    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, verbose_name='Бренд')
-    options = models.ManyToManyField(Option)
+    brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, verbose_name='Бренд', related_name='cars')
+    options = models.ManyToManyField(Option, related_name='cars')
 
     def __str__(self):
         return self.number
@@ -50,7 +50,7 @@ class Auto(models.Model):
 
 
 class VehiclePassport(models.Model):
-    auto = models.OneToOneField(Auto, on_delete=models.CASCADE, verbose_name='Автомобиль')
+    auto = models.OneToOneField(Auto, on_delete=models.CASCADE, verbose_name='Автомобиль', related_name='pts')
     vin = models.CharField(max_length=30, verbose_name='Идентификационный номер (VIN)')
     engine_volume = models.SmallIntegerField(verbose_name='Объем двигателя, куб.см')
     engine_power = models.SmallIntegerField(verbose_name='Мощность двигателя, л.с.')
