@@ -1,11 +1,17 @@
 from django.db import models
+from utils.models import generate_unique_slug
 
 
 class Brand(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название')
+    slug = models.SlugField(max_length=200, default='', blank=True)
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        self.slug = generate_unique_slug(Brand, self.title)
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Бренд'
@@ -44,13 +50,17 @@ class Auto(models.Model):
     def __str__(self):
         return self.number
 
+    def display_engine_power(self):
+        return self.pts.engine_power
+    display_engine_power.short_description = 'Можность двигателя'
+
     class Meta:
         verbose_name = 'Автомобиль'
         verbose_name_plural = 'Автомобили'
 
 
 class VehiclePassport(models.Model):
-    auto = models.OneToOneField(Auto, on_delete=models.CASCADE, verbose_name='Автомобиль', related_name='pts')
+    auto = models.OneToOneField(Auto, on_delete=models.CASCADE, verbose_name=Auto._meta.verbose_name, related_name='pts')
     vin = models.CharField(max_length=30, verbose_name='Идентификационный номер (VIN)')
     engine_volume = models.SmallIntegerField(verbose_name='Объем двигателя, куб.см')
     engine_power = models.SmallIntegerField(verbose_name='Мощность двигателя, л.с.')
@@ -59,5 +69,5 @@ class VehiclePassport(models.Model):
         return f'{self.auto}::{self.vin}'
 
     class Meta:
-        verbose_name = 'Паспорт машины'
-        verbose_name_plural = 'Паспорта машин'
+        verbose_name = 'Паспорт автомобиля'
+        verbose_name_plural = 'Паспорта автомобилей'
