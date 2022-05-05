@@ -50,7 +50,7 @@ class AutoAdmin(admin.ModelAdmin):
             'fields': ('id', )
         }),
         ('Основная информация', {
-            'fields': ('brand', 'number', 'options', ('year', 'auto_class'))
+            'fields': ('brand', 'number', 'options', ('year', 'auto_class'), 'logo')
         }),
         ('Описание', {
             'fields': ('description', )
