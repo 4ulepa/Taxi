@@ -12,7 +12,7 @@ urlpatterns = [
     path('brand-delete/<int:pk>/', views.BrandDeleteView.as_view(), name='brand_delete'),
 
     # Model: Auto
-    path('auto-create/<int:brand_pk>/', views.auto_create_view, name='auto-create'),
+    path('auto-create/<int:brand_pk>/', views.AutoCreationView.as_view(), name='auto-create'),
 
     path('send-email/', views.send_email_view, name='send_email')
 ]
