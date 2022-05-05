@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from utils.models import generate_unique_slug
@@ -95,3 +96,11 @@ class VehiclePassport(models.Model):
     class Meta:
         verbose_name = 'Паспорт автомобиля'
         verbose_name_plural = 'Паспорта автомобилей'
+
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE, related_name='favorite')
+    brand = models.ForeignKey(Brand, null=True, on_delete=models.CASCADE, related_name='favorite')
+
+    def __str__(self):
+        return f'{self.user.username} - {self.brand.title}'

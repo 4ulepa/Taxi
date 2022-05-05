@@ -1,5 +1,5 @@
 from django import forms
-from .models import Brand, Auto
+from .models import Brand, Auto, Favorite
 
 
 class SendEmailForm(forms.Form):
@@ -130,3 +130,22 @@ class BaseAutoCreationFormSet(forms.BaseInlineFormSet):
 
 AutoFormset = forms.inlineformset_factory(Brand, Auto, form=AutoCreationForm,
                                           can_delete_extra=False, formset=BaseAutoCreationFormSet, extra=2)
+
+
+class BrandAddToFavoriteForm(forms.ModelForm):
+    class Meta:
+        model = Favorite
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields:
+            self.fields[field].widget = forms.HiddenInput()
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if Favorite.objects.filter(user=cleaned_data['user'], brand=cleaned_data['brand']).exists():
+            raise forms.ValidationError(f'Бренд уже добавлен в избранное')
+
+        return cleaned_data

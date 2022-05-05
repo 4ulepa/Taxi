@@ -1,11 +1,11 @@
 from django.contrib import messages
-from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.http import HttpResponseRedirect
 from django.views.generic import DetailView, ListView, CreateView, UpdateView, DeleteView, TemplateView
 from django.views.generic.edit import ProcessFormView
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy
-from .models import Brand
-from .forms import SendEmailForm, BrandCreationForm, BrandUpdateForm, AutoFormset
+from .models import Brand, Favorite
+from .forms import (SendEmailForm, BrandCreationForm, BrandUpdateForm, AutoFormset, BrandAddToFavoriteForm)
 
 
 def send_email_view(request):
@@ -49,6 +49,7 @@ class BrandDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['cars'] = self.object.cars.all()
+        context['favorite_form'] = BrandAddToFavoriteForm(initial={'user': self.request.user, 'brand': self.object})
         return context
 
 
@@ -60,7 +61,7 @@ class BrandListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['brand_number'] = Brand.objects.count()
+        context['brand_number'] = self.object_list.count()
         return context
 
     def get_queryset(self):
@@ -103,6 +104,27 @@ class BrandDeleteView(DeleteView):
         result = super().delete(request, *args, **kwargs)
         messages.success(request, f'Бренд {self.object} удален')
         return result
+
+
+class BrandAddToFavoriteView(LoginRequiredMixin, CreateView):
+    model = Favorite
+    form_class = BrandAddToFavoriteForm
+
+    def get_success_url(self):
+        return self.object.brand.get_absolute_url()
+
+    def form_valid(self, form):
+        messages.success(self.request, f'Бренд {form.cleaned_data["brand"]} добавлен в избранное')
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, form.non_field_errors())
+        brand = form.cleaned_data.get('brand', None)
+        if not brand:
+            brand = get_object_or_404(Brand, pk=form.data.get('brand'))
+        redirect_url = brand.get_absolute_url() if brand else reverse_lazy('motorpool:brand_list')
+        return HttpResponseRedirect(redirect_url)
+
 
 # Оставляю для себя для сравнения
 # def auto_create_view(request, brand_pk):
